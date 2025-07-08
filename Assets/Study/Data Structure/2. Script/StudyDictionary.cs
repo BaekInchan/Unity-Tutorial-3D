@@ -7,7 +7,6 @@ public class PersonData
     public string name;
     public float height;
     public float weight;
-    public DetailData detailData;
 
     public PersonData(int age, string name, float height, float weigth)
     {
@@ -18,10 +17,6 @@ public class PersonData
     }
 }
 
-public class DetailData
-{
-
-}
 
 public class StudyDictionary : MonoBehaviour
 {
