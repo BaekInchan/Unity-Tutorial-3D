@@ -26,6 +26,9 @@ public class ObjectPoolQueue : MonoBehaviour
 
     public void EnqueueObject(GameObject newObj )
     {
+        newObj.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+        newObj.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+
         objQueue.Enqueue(newObj);
         newObj.SetActive(false);
     }
