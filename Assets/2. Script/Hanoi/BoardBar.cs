@@ -12,7 +12,6 @@ public class BoardBar : MonoBehaviour
     {
         if (!HanoiTower.isSelected) // 선택이 안된 상태일 때
         {
-            HanoiTower.isSelected = true;
             HanoiTower.selectedDonut = PopDonut();
             Debug.Log("클릭 됨");
         }
@@ -51,6 +50,7 @@ public class BoardBar : MonoBehaviour
         if (!CheckDonut(donut))
             return;
 
+        HanoiTower.moveCount++;
         HanoiTower.isSelected = false;
         HanoiTower.selectedDonut = null;
 
@@ -63,8 +63,15 @@ public class BoardBar : MonoBehaviour
 
     public GameObject PopDonut()
     {
-        GameObject donut = barStack.Pop(); // Stack에서 GameObject를 꺼내는 기능
+        if (barStack.Count > 0)
+        {
+            HanoiTower.currBar = this;
+            HanoiTower.isSelected = true;
 
-        return donut; // 꺼낸 도넛을 반환
+            GameObject donut = barStack.Pop(); // Stack에서 GameObject를 꺼내는 기능
+
+            return donut; // 꺼낸 도넛을 반환
+        }
+        return null;
     }
 }
