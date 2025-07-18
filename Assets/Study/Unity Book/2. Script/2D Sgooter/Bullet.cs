@@ -1,10 +1,7 @@
 using UnityEngine;
 
-public class Bullett : MonoBehaviour
+public class Bullet : MonoBehaviour
 {
-    public GameObject bulletFactory;
-    public GameObject firePosition;
-
     public float speed = 5;
 
     // Update is called once per frame
