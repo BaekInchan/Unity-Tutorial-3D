@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class FPSPlayerFire : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class FPSPlayerFire : MonoBehaviour
     public GameObject bombFactory;
 
     public float throwPower = 15f;
+    public int weaponPower = 5;
 
     public GameObject bulletEffect;
     private ParticleSystem ps;
@@ -17,14 +19,31 @@ public class FPSPlayerFire : MonoBehaviour
     }
     private void Update()
     {
+        if (FPSGameManager.Instance.gState != FPSGameManager.GameState.Run)
+            return;
+
         if (Input.GetMouseButtonDown(0))
         {
             Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
             RaycastHit hitInfo = new RaycastHit();
+            if (Physics.Raycast(ray, out hitInfo))
+            {
+                if (hitInfo.transform.gameObject.layer == LayerMask.NameToLayer("Enemy")) // raycast를 Enemy가 맞은 경우
+                {
+                    EnemyFSM eFSM = hitInfo.transform.GetComponent<EnemyFSM>();
+                    eFSM.HitEnemy(weaponPower);
+                }
+                else // Raycast를 맞은 대상이 Enemy가 아닌 경우
+                {
+                    bulletEffect.transform.position = hitInfo.point;
+                    bulletEffect.transform.forward = hitInfo.normal;
+
+                    ps.Play();
+                }
+            }
 
             if (Physics.Raycast(ray, out hitInfo)) 
             {
-                bulletEffect.transform.position = hitInfo.point;
 
                 ps.Play();
             }
@@ -38,5 +57,7 @@ public class FPSPlayerFire : MonoBehaviour
             Rigidbody rb = bomb.GetComponent<Rigidbody>();
             rb.AddForce(Camera.main.transform.forward * throwPower, ForceMode.Impulse);
         }
+
+
     }
 }
