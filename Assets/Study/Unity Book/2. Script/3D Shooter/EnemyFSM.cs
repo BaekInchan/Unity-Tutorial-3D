@@ -27,6 +27,8 @@ public class EnemyFSM : MonoBehaviour
     private int maxHp = 15;
     public Slider hpSlider;
 
+    private Quaternion originRot;
+
     private void Start()
     {
         m_State = EnemyState.Idle;
@@ -34,6 +36,7 @@ public class EnemyFSM : MonoBehaviour
         player = GameObject.Find("Player").transform;
         cc = GetComponent<CharacterController>();
         originPos = transform.position;
+        originRot = transform.rotation;
         anim = transform.GetComponentInChildren<Animator>();
 
         
@@ -95,6 +98,7 @@ public class EnemyFSM : MonoBehaviour
         else // 타겟이 공격 거리 내에 있는 경우 ->
         {
             currentTime = attackDelay;
+            anim.SetTrigger("MoveToAttackDelay");
             m_State = EnemyState.Attack;
             Debug.Log("상태 전환 : Move -> Attack");
         }
@@ -108,29 +112,39 @@ public class EnemyFSM : MonoBehaviour
             if(currentTime > attackDelay)
             {
                 currentTime = 0f;
-                player.GetComponent<MoveFPSPlayer>().DamageAction(attackPower);
+                //player.GetComponent<MoveFPSPlayer>().DamageAction(attackPower);
+                anim.SetTrigger("StartAttack");
                 Debug.Log("공격");
             }
         }
         else // 공격 범위 밖에 있을 경우 -> Move 전환 
         {
             currentTime = 0f;
+            anim.SetTrigger("AttackToMove");
             m_State = EnemyState.Move;
             
             Debug.Log("상태 전환 : Attack -> Move");
         }
     }
     
+    public void AttackAction()
+    {
+        player.GetComponent<MoveFPSPlayer>().DamageAction(attackPower);
+
+    }
+
     private void Return() 
     {
         if (Vector3.Distance(transform.position, originPos) > 0.1f) // 원래 위치로 복귀중
         {
             Vector3 dir = (originPos - transform.position).normalized;
             cc.Move(dir * moveSpeed * Time.deltaTime);
+            transform.forward = dir;
         }
         else
         {
             transform.position = originPos;
+            transform.rotation = originRot;
             hp = 15;
             anim.SetTrigger("MoveToIdle");
             m_State = EnemyState.Idle;
