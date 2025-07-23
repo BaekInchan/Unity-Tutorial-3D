@@ -24,13 +24,16 @@ public class Node : IComparable<Node>
         this.pos = pos;
         parent = null;
         nodeTotalCost = 0;
+        estimateCost = 0;
         isObstacle = false;
     }
+
     public void MarkAsObstacle()
     {
         isObstacle = true;
     }
 
+    // F = G + H
     public float GetFCost()
     {
         return nodeTotalCost + estimateCost;
@@ -42,11 +45,12 @@ public class Node : IComparable<Node>
         float otherF = node.GetFCost();
 
         if (myF < otherF) return -1;
-        
         if (myF > otherF) return 1;
 
-        if (estimateCost < node.estimateCost) return -1;
-        if (estimateCost > node.estimateCost) return 1;
+        if (estimateCost < node.estimateCost)
+            return -1;
+        if (estimateCost > node.estimateCost)
+            return 1;
 
         return 0;
     }

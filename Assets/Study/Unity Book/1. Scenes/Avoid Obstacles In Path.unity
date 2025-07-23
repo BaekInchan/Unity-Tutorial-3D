@@ -1458,6 +1458,7 @@ GameObject:
   - component: {fileID: 1484733648}
   - component: {fileID: 1484733647}
   - component: {fileID: 1484733646}
+  - component: {fileID: 1484733651}
   m_Layer: 0
   m_Name: Mover
   m_TagString: Untagged
@@ -1565,12 +1566,28 @@ Transform:
   m_GameObject: {fileID: 1484733645}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.82, y: 0, z: -40.54}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1484733651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484733645}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9670e9610d1f2ee45b1544faecd6c443, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  path: {fileID: 1698344522}
+  speed: 5
+  mass: 5
+  isLooping: 1
 --- !u!1 &1579116257
 GameObject:
   m_ObjectHideFlags: 0
@@ -1831,13 +1848,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   points:
   - {x: 0, y: 0, z: 0}
-  - {x: 20, y: 0, z: 0}
-  - {x: 0, y: 0, z: 20}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 25}
+  - {x: 10, y: 0, z: 30}
+  - {x: 20, y: 0, z: 30}
+  - {x: 25, y: 0, z: 25}
+  - {x: 30, y: 0, z: 20}
+  - {x: 35, y: 0, z: 10}
+  - {x: 20, y: 0, z: -5}
   radius: 2
 --- !u!4 &1698344523
 Transform:

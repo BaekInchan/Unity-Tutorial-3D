@@ -2,6 +2,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.AI;
 
 public class EnemyFSM : MonoBehaviour
 {
@@ -21,13 +22,15 @@ public class EnemyFSM : MonoBehaviour
 
     public int attackPower = 3;
     public int hp = 15;
-
-    private Vector3 originPos;
-    public float moveDistance = 20f;
     private int maxHp = 15;
+
     public Slider hpSlider;
 
+    public float moveDistance = 20f;
+    private Vector3 originPos;
     private Quaternion originRot;
+
+    NavMeshAgent smith;
 
     private void Start()
     {
@@ -39,6 +42,7 @@ public class EnemyFSM : MonoBehaviour
         originRot = transform.rotation;
         anim = transform.GetComponentInChildren<Animator>();
 
+        smith = GetComponent<NavMeshAgent>();
         
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -90,18 +94,31 @@ public class EnemyFSM : MonoBehaviour
         }
         else if (Vector3.Distance(transform.position, player.position) > attackDistance) // 타겟이 공격 거리보다 먼 경우 -> 이동 실행
         {
-            Vector3 dir = (player.position - transform.position).normalized;
+            //Vector3 dir = (player.position - transform.position).normalized;
 
-            cc.Move(dir * moveSpeed * Time.deltaTime);
-            transform.forward = dir;
+            //cc.Move(dir * moveSpeed * Time.deltaTime);
+            //transform.forward = dir;
+
+            smith.stoppingDistance = attackDistance;
+            smith.SetDestination(player.position);
+
+
+            
         }
-        else // 타겟이 공격 거리 내에 있는 경우 ->
+        else // 타겟이 공격 거리 내에 있는 경우 -> 공격 전환
         {
-            currentTime = attackDelay;
-            anim.SetTrigger("MoveToAttackDelay");
             m_State = EnemyState.Attack;
             Debug.Log("상태 전환 : Move -> Attack");
+            currentTime = attackDelay;
+            anim.SetTrigger("MoveToAttackDelay");
+            smith.isStopped = true;
+            smith.ResetPath();
         }
+        if (!smith.isOnNavMesh)
+        {
+            Debug.LogWarning("Agent가 NavMesh 위에 없음!");
+        }
+
     }
 
     private void Attack() 
@@ -135,20 +152,27 @@ public class EnemyFSM : MonoBehaviour
 
     private void Return() 
     {
-        if (Vector3.Distance(transform.position, originPos) > 0.1f) // 원래 위치로 복귀중
+        if (Vector3.Distance(transform.position, originPos) > 0.5f) // 원래 위치로 복귀중
         {
-            Vector3 dir = (originPos - transform.position).normalized;
-            cc.Move(dir * moveSpeed * Time.deltaTime);
-            transform.forward = dir;
+            //Vector3 dir = (originPos - transform.position).normalized;
+            //cc.Move(dir * moveSpeed * Time.deltaTime);
+            //transform.forward = dir;
+            smith.isStopped = false;
+            smith.SetDestination(originPos);
+            smith.stoppingDistance = 0;
         }
         else
         {
+            smith.isStopped = true;
+            smith.ResetPath();
+
             transform.position = originPos;
             transform.rotation = originRot;
-            hp = 15;
-            anim.SetTrigger("MoveToIdle");
+            
+            hp = maxHp;
             m_State = EnemyState.Idle;
             Debug.Log("상태 전환 : Return -> Idle");
+            anim.SetTrigger("MoveToIdle");
         }
     }
 
@@ -159,16 +183,21 @@ public class EnemyFSM : MonoBehaviour
         
         hp -= hitPower;
 
-        if ( hp < 0)
+        smith.isStopped = true;
+        smith.ResetPath();
+
+        if ( hp > 0)
         {
             m_State = EnemyState.Damaged;
             Debug.Log("상태 전환 : Any State -> Damaged");
+            anim.SetTrigger("Damaged");
             Damaged();
         }
         else
         {
             m_State = EnemyState.Die;
             Debug.Log("상태 전환 : Any State -> Die");
+            anim.SetTrigger("Die");
             Die();
         }
     }   
@@ -181,7 +210,7 @@ public class EnemyFSM : MonoBehaviour
     IEnumerator DamageProcess()
     {
         
-        yield return new WaitForSeconds(0.5f); // 피격 애니메이션 시간만큼 대기
+        yield return new WaitForSeconds(1f); // 피격 애니메이션 시간만큼 대기
 
         m_State = EnemyState.Move;
         Debug.Log("상태 전환 : Damage -> Move");

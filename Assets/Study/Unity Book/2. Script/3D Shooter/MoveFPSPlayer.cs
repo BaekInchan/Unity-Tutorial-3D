@@ -17,6 +17,8 @@ public class MoveFPSPlayer : MonoBehaviour
 
     public int hp = 20;
 
+    Animator anim;
+
     private int maxHp = 20;
     public Slider hpSlider;
 
@@ -25,6 +27,8 @@ public class MoveFPSPlayer : MonoBehaviour
     private void Start()
     {
         cc = GetComponent<CharacterController>();
+
+        anim = GetComponentInChildren<Animator>();
     }
 
     private void Update()
@@ -36,6 +40,8 @@ public class MoveFPSPlayer : MonoBehaviour
 
         Vector3 dir = new Vector3(h, 0, v);
         dir = dir.normalized;
+
+        anim.SetFloat("MoveMotion", dir.magnitude);
 
         dir = Camera.main.transform.TransformDirection(dir);
 
